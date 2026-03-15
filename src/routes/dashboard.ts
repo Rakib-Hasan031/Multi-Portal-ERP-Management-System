@@ -333,6 +333,166 @@ dashboardRoute.get('/', (c) => {
       </div>
     </div>
   </div>
+
+  <!-- Quick New Booking Modal — Category-Based -->
+  <div id="quickBookingModal" class="modal-overlay hidden">
+    <div class="modal-container max-w-2xl" style="max-height:90vh;overflow-y:auto;">
+      <div class="modal-header sticky top-0 bg-white z-10 border-b">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center"><i class="fas fa-plus text-white text-xs"></i></div>
+          <h3 class="text-lg font-semibold text-gray-800">Quick New Booking</h3>
+        </div>
+        <button onclick="closeModal('quickBookingModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="form-label">Guest Name *</label>
+          <input type="text" id="db_qb_name" class="form-input" placeholder="Full name">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="form-label">Phone Number *</label><input type="tel" class="form-input" placeholder="+880 1700-000000"></div>
+          <div><label class="form-label">Email</label><input type="email" class="form-input" placeholder="guest@email.com"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="form-label">Check-in Date *</label><input type="date" id="db_qb_checkin" class="form-input"></div>
+          <div><label class="form-label">Check-out Date *</label><input type="date" id="db_qb_checkout" class="form-input"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="form-label">Room Category *</label>
+            <select id="db_qb_cat" class="form-input" onchange="dbUpdateSummary()">
+              <option value="">Select Category</option>
+              <option value="standard" data-rate="2000">Standard — ৳2,000/night</option>
+              <option value="deluxe" data-rate="3500">Deluxe — ৳3,500/night</option>
+              <option value="super_deluxe" data-rate="5000">Super Deluxe — ৳5,000/night</option>
+              <option value="deluxe_couple" data-rate="4500">Deluxe Couple — ৳4,500/night</option>
+              <option value="suite" data-rate="8000">Suite — ৳8,000/night</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Total Rooms</label>
+            <input type="number" id="db_qb_rooms" class="form-input" value="1" min="1" onchange="dbUpdateSummary()">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="form-label">Adults *</label><input type="number" class="form-input" value="2" min="1"></div>
+          <div><label class="form-label">Children</label><input type="number" class="form-input" value="0" min="0"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="form-label">Booking Source</label>
+            <select class="form-input"><option>Walk-in</option><option>Phone</option><option>Website</option><option>B2B Agent</option><option>OTA</option></select>
+          </div>
+          <div><label class="form-label">Special Requests</label>
+            <input type="text" class="form-input" placeholder="Any special requirements...">
+          </div>
+        </div>
+        <!-- Payment Summary -->
+        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
+          <h4 class="text-xs font-bold text-orange-700 uppercase mb-3">Payment Summary</h4>
+          <div class="space-y-1.5 text-sm">
+            <div class="flex justify-between text-gray-600"><span>Room fare</span><span id="db_ps_fare">৳ 0</span></div>
+            <div class="flex justify-between text-gray-600"><span>VAT (7.5%)</span><span id="db_ps_vat">৳ 0</span></div>
+            <div class="flex justify-between font-bold text-gray-800 border-t pt-2"><span>Total</span><span id="db_ps_total" class="text-blue-700">৳ 0</span></div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="form-label">Advance Paid</label><input type="number" id="db_paid" class="form-input" placeholder="0" oninput="dbCalcDue()"></div>
+          <div><label class="form-label">Balance Due</label><input type="number" id="db_due" class="form-input bg-red-50 text-red-600 font-semibold" readonly placeholder="0"></div>
+        </div>
+        <div><label class="form-label">Payment Method</label>
+          <select class="form-input"><option>Cash</option><option>bKash</option><option>Card</option><option>Bank Transfer</option></select>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-3 text-xs text-blue-700"><i class="fas fa-info-circle mr-1"></i>Rate calculated automatically. Physical room assigned upon confirmation.</div>
+      </div>
+      <div class="sticky bottom-0 bg-white border-t px-5 py-3 flex gap-3 justify-end">
+        <button onclick="closeModal('quickBookingModal')" class="btn-secondary">Cancel</button>
+        <button onclick="dbSubmitBooking()" class="btn-primary">Create Booking</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Rooms Modal -->
+  <div id="assignRoomsModal" class="modal-overlay hidden">
+    <div class="modal-container max-w-md">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-gray-800">Assign Rooms</h3>
+        <button onclick="closeModal('assignRoomsModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <div class="p-5 space-y-4">
+        <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3">
+          <div>
+            <p class="text-sm font-semibold text-gray-800">Guest: <span class="text-blue-600">New Guest</span></p>
+            <p class="text-xs text-gray-500 mt-0.5">Request: <span class="font-semibold" id="assignCatLabel">1x Standard</span></p>
+          </div>
+          <button class="text-xs text-blue-600 underline">View details</button>
+        </div>
+        <div id="dbAssignInputs" class="space-y-3">
+          <div><label class="form-label">Room 1</label><input type="text" class="form-input" placeholder="e.g. 101" list="dbRoomList"></div>
+        </div>
+        <datalist id="dbRoomList">
+          <option value="101">101 — Standard</option>
+          <option value="102">102 — Standard</option>
+          <option value="202">202 — Deluxe</option>
+          <option value="205">205 — Deluxe</option>
+          <option value="401">401 — Deluxe Couple</option>
+        </datalist>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700">
+          <i class="fas fa-info-circle mr-1"></i>Assigning rooms will confirm the booking and notify the guest.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('assignRoomsModal')" class="btn-secondary">Cancel</button>
+        <button onclick="showToast('Rooms assigned! Status → Confirmed.','success'); closeModal('assignRoomsModal')" class="btn-primary">Confirm Assignment</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let _dbTotal = 0;
+    function dbUpdateSummary() {
+      const catSel = document.getElementById('db_qb_cat');
+      const cin = document.getElementById('db_qb_checkin')?.value;
+      const cout = document.getElementById('db_qb_checkout')?.value;
+      const rooms = parseInt(document.getElementById('db_qb_rooms')?.value) || 1;
+      let rate = catSel?.selectedOptions[0]?.dataset?.rate ? parseInt(catSel.selectedOptions[0].dataset.rate) : 0;
+      let nights = 0;
+      if (cin && cout) { const d1=new Date(cin),d2=new Date(cout); nights=Math.max(0,Math.round((d2-d1)/86400000)); }
+      const fare = rate * nights * rooms;
+      const vat = Math.round(fare * 0.075);
+      const total = fare + vat;
+      _dbTotal = total;
+      document.getElementById('db_ps_fare').textContent = '৳ ' + fare.toLocaleString();
+      document.getElementById('db_ps_vat').textContent = '৳ ' + vat.toLocaleString();
+      document.getElementById('db_ps_total').textContent = '৳ ' + total.toLocaleString();
+      dbCalcDue();
+    }
+    function dbCalcDue() {
+      const paid = parseFloat(document.getElementById('db_paid')?.value) || 0;
+      const due = Math.max(0, _dbTotal - paid);
+      const el = document.getElementById('db_due');
+      if (el) el.value = due;
+    }
+    function dbSubmitBooking() {
+      const name = document.getElementById('db_qb_name')?.value;
+      const cat = document.getElementById('db_qb_cat')?.value;
+      if (!name || !cat) { showToast('Please fill Guest Name and Category.','error'); return; }
+      const paid = parseFloat(document.getElementById('db_paid')?.value) || 0;
+      closeModal('quickBookingModal');
+      if (paid >= _dbTotal && _dbTotal > 0) {
+        showToast('Booking confirmed! Room auto-assigned (fully paid).','success');
+      } else {
+        showToast('Booking created! Pending room assignment.','success');
+        setTimeout(() => { if(confirm('Assign room now?')) openModal('assignRoomsModal'); }, 500);
+      }
+    }
+    // Set default dates
+    (function(){
+      const today = new Date(), tom = new Date(today); tom.setDate(tom.getDate()+1);
+      const fmt = d => d.toISOString().split('T')[0];
+      const ci = document.getElementById('db_qb_checkin'), co = document.getElementById('db_qb_checkout');
+      if(ci) ci.value = fmt(today); if(co) co.value = fmt(tom);
+    })();
+  </script>
   `
 
   return c.html(adminLayout('Dashboard', content, 'dashboard'))
