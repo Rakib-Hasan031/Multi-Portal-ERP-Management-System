@@ -10,23 +10,24 @@ dashboardRoute.get('/', (c) => {
     <button onclick="openModal('transferRoomModal')" class="btn-secondary"><i class="fas fa-exchange-alt"></i>Transfer Room</button>
     <button onclick="openModal('recordPaymentModal')" class="btn-secondary"><i class="fas fa-credit-card"></i>Record Payment</button>
     <button onclick="openModal('promotionModal')" class="btn-secondary"><i class="fas fa-tag"></i>Create Promo</button>
+    <a href="/property/room-availability" class="btn-secondary"><i class="fas fa-th-large"></i>Room Availability</a>
   `)}
 
   <!-- Quick Stats Row -->
   <div class="stats-grid mb-6">
-    ${statCard('fas fa-inbox', 'bg-blue-500', 'New Requests', '12', '+3 from yesterday', 'up')}
-    ${statCard('fas fa-clock', 'bg-yellow-500', 'Pending Approval', '8', '2 urgent', 'up')}
-    ${statCard('fas fa-calendar-check', 'bg-green-500', 'Assigned Today', '24', '+5 from last week', 'up')}
-    ${statCard('fas fa-times-circle', 'bg-red-500', 'Cancelled', '3', '-1 from yesterday', 'down')}
-    ${statCard('fas fa-bed', 'bg-teal-500', 'Available Rooms', '18', '18 of 45 total', 'down')}
-    ${statCard('fas fa-sign-in-alt', 'bg-indigo-500', 'Check-In Today', '11', '3 pending', 'up')}
-    ${statCard('fas fa-sign-out-alt', 'bg-orange-500', 'Check-Out Today', '9', '2 late', 'up')}
-    ${statCard('fas fa-user-friends', 'bg-purple-500', 'In-House Guests', '63', 'Capacity: 90', 'up')}
+    ${statCard('fas fa-inbox',        'bg-blue-500',   'New Requests',    '12', '+3 from yesterday',   'up')}
+    ${statCard('fas fa-clock',        'bg-yellow-500', 'Pending Approval', '8', '2 urgent',            'up')}
+    ${statCard('fas fa-calendar-check','bg-green-500', 'Assigned Today',  '24', '+5 from last week',   'up')}
+    ${statCard('fas fa-times-circle', 'bg-red-500',    'Cancelled',        '3', '-1 from yesterday',  'down')}
+    ${statCard('fas fa-bed',          'bg-teal-500',   'Available Rooms', '18', '18 of 45 total',     'down')}
+    ${statCard('fas fa-sign-in-alt',  'bg-indigo-500', 'Check-In Today',  '11', '3 pending',           'up')}
+    ${statCard('fas fa-sign-out-alt', 'bg-orange-500', 'Check-Out Today',  '9', '2 late',              'up')}
+    ${statCard('fas fa-user-friends', 'bg-purple-500', 'In-House Guests', '63', 'Capacity: 90',        'up')}
   </div>
 
-  <!-- Charts Row -->
+  <!-- Charts Row 1 -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-    <!-- Booking Trends Chart -->
+    <!-- Booking Trends -->
     <div class="lg:col-span-2 card p-4">
       <div class="flex items-center justify-between mb-4">
         <div>
@@ -40,7 +41,6 @@ dashboardRoute.get('/', (c) => {
       </div>
       <canvas id="bookingTrendChart" height="180"></canvas>
     </div>
-
     <!-- Channel Distribution -->
     <div class="card p-4">
       <div class="mb-4">
@@ -51,7 +51,7 @@ dashboardRoute.get('/', (c) => {
     </div>
   </div>
 
-  <!-- Second Row -->
+  <!-- Charts Row 2 -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
     <!-- Revenue Chart -->
     <div class="lg:col-span-2 card p-4">
@@ -66,7 +66,6 @@ dashboardRoute.get('/', (c) => {
       </div>
       <canvas id="revenueChart" height="180"></canvas>
     </div>
-
     <!-- Occupancy -->
     <div class="card p-4">
       <div class="mb-4">
@@ -87,11 +86,11 @@ dashboardRoute.get('/', (c) => {
       </div>
       <div class="divide-y divide-gray-50">
         ${[
-          {name:'James Wilson', room:'204', time:'2:00 PM', status:'confirmed'},
-          {name:'Maria Santos', room:'301', time:'3:30 PM', status:'confirmed'},
-          {name:'Ahmed Al-Rashid', room:'105', time:'4:00 PM', status:'pending'},
-          {name:'Sophie Chen', room:'402', time:'5:00 PM', status:'confirmed'},
-          {name:'Robert Miller', room:'112', time:'6:00 PM', status:'pending'},
+          {name:'James Wilson',    room:'204', time:'2:00 PM',  status:'confirmed'},
+          {name:'Maria Santos',    room:'301', time:'3:30 PM',  status:'confirmed'},
+          {name:'Ahmed Al-Rashid', room:'105', time:'4:00 PM',  status:'pending'},
+          {name:'Sophie Chen',     room:'402', time:'5:00 PM',  status:'confirmed'},
+          {name:'Robert Miller',   room:'112', time:'6:00 PM',  status:'pending'},
         ].map(a => `
           <div class="px-4 py-3 flex items-center gap-3 hover:bg-gray-50">
             <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">${a.name.charAt(0)}</div>
@@ -113,11 +112,11 @@ dashboardRoute.get('/', (c) => {
       </div>
       <div class="divide-y divide-gray-50">
         ${[
-          {name:'Emily Clark', room:'206', time:'10:00 AM', nights:3, amount:'$450'},
-          {name:'David Lee', room:'318', time:'11:00 AM', nights:5, amount:'$750'},
-          {name:'Fatima Nair', room:'101', time:'12:00 PM', nights:2, amount:'$280'},
-          {name:'Carlos Rivera', room:'415', time:'1:00 PM', nights:7, amount:'$1,050'},
-          {name:'Anna Schmidt', room:'209', time:'2:00 PM', nights:4, amount:'$600'},
+          {name:'Emily Clark',   room:'206', nights:3, amount:'৳ 9,000',  time:'10:00 AM'},
+          {name:'David Lee',     room:'318', nights:5, amount:'৳ 17,500', time:'11:00 AM'},
+          {name:'Fatima Nair',   room:'101', nights:2, amount:'৳ 4,000',  time:'12:00 PM'},
+          {name:'Carlos Rivera', room:'415', nights:7, amount:'৳ 24,500', time:'1:00 PM'},
+          {name:'Anna Schmidt',  room:'209', nights:4, amount:'৳ 14,000', time:'2:00 PM'},
         ].map(d => `
           <div class="px-4 py-3 flex items-center gap-3 hover:bg-gray-50">
             <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-xs font-bold text-orange-600">${d.name.charAt(0)}</div>
@@ -134,23 +133,48 @@ dashboardRoute.get('/', (c) => {
       </div>
     </div>
 
-    <!-- Recent Activity & Room Availability -->
+    <!-- Room Availability Mini + Quick Actions -->
     <div class="space-y-4">
-      <!-- Room Availability Mini -->
+      <!-- ✅ Room Availability Mini-Widget (fixed: 18/27/0) -->
       <div class="card p-4">
         <div class="flex items-center justify-between mb-3">
-          <h3 class="font-semibold text-gray-800 text-sm"><i class="fas fa-calendar text-blue-500 mr-1"></i>Room Availability</h3>
-          <div class="flex gap-2 text-xs">
-            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span>Avail</span>
-            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-400 inline-block"></span>Occup</span>
-            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>Resv</span>
-          </div>
+          <h3 class="font-semibold text-gray-800 text-sm"><i class="fas fa-th-large text-blue-500 mr-1"></i>Room Availability</h3>
+          <a href="/property/room-availability" class="text-xs text-blue-600 hover:underline">Full Board →</a>
         </div>
-        <div id="availabilityCalendar" class="text-xs"></div>
-        <div class="mt-3 grid grid-cols-3 gap-2 text-center">
-          <div class="bg-green-50 rounded p-2"><div class="text-lg font-bold text-green-600">18</div><div class="text-xs text-gray-500">Available</div></div>
-          <div class="bg-red-50 rounded p-2"><div class="text-lg font-bold text-red-600">27</div><div class="text-xs text-gray-500">Occupied</div></div>
-          <div class="bg-yellow-50 rounded p-2"><div class="text-lg font-bold text-yellow-600">0</div><div class="text-xs text-gray-500">Reserved</div></div>
+        <!-- 7-day mini calendar dots -->
+        <div class="grid grid-cols-7 gap-1 mb-3">
+          ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d,i) => `
+            <div class="text-center">
+              <div class="text-xs text-gray-400 mb-1">${d}</div>
+              <div class="w-7 h-7 rounded-lg mx-auto flex items-center justify-center text-xs font-bold
+                ${i===2 ? 'bg-blue-600 text-white' :
+                  i===0||i===1 ? 'bg-green-100 text-green-700' :
+                  i===3 ? 'bg-purple-100 text-purple-700' :
+                  i===4 ? 'bg-yellow-100 text-yellow-700' :
+                  'bg-red-100 text-red-700'}">${24+i}</div>
+            </div>
+          `).join('')}
+        </div>
+        <!-- Legend -->
+        <div class="flex gap-3 text-xs mb-3 justify-center">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span>Avail</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-400 inline-block"></span>Occup</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>Resv</span>
+        </div>
+        <!-- Stats: exactly 18 / 27 / 0 -->
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-green-50 rounded-lg p-2">
+            <div class="text-xl font-bold text-green-600">18</div>
+            <div class="text-xs text-gray-500">Available</div>
+          </div>
+          <div class="bg-red-50 rounded-lg p-2">
+            <div class="text-xl font-bold text-red-600">27</div>
+            <div class="text-xs text-gray-500">Occupied</div>
+          </div>
+          <div class="bg-yellow-50 rounded-lg p-2">
+            <div class="text-xl font-bold text-yellow-600">0</div>
+            <div class="text-xs text-gray-500">Reserved</div>
+          </div>
         </div>
       </div>
 
@@ -175,6 +199,8 @@ dashboardRoute.get('/', (c) => {
     </div>
   </div>
 
+  <!-- ═══ MODALS ═══ -->
+
   <!-- Transfer Room Modal -->
   <div id="transferRoomModal" class="modal-overlay hidden">
     <div class="modal-container">
@@ -183,37 +209,25 @@ dashboardRoute.get('/', (c) => {
         <button onclick="closeModal('transferRoomModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
       </div>
       <div class="p-4 space-y-4">
-        <div>
-          <label class="form-label">Guest Name / Booking ID *</label>
-          <input type="text" class="form-input" placeholder="Search by name or booking ID">
-        </div>
+        <div><label class="form-label">Guest Name / Booking ID *</label>
+          <input type="text" class="form-input" placeholder="Search by name or booking ID"></div>
         <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="form-label">Current Room</label>
-            <input type="text" class="form-input" placeholder="Auto-filled" readonly>
-          </div>
-          <div>
-            <label class="form-label">Transfer To Room *</label>
+          <div><label class="form-label">Current Room</label>
+            <input type="text" class="form-input" placeholder="Auto-filled" readonly></div>
+          <div><label class="form-label">Transfer To Room *</label>
             <select class="form-input">
               <option>Select available room</option>
-              <option>101 - Standard</option>
-              <option>205 - Deluxe</option>
-              <option>301 - Suite</option>
+              <option>101 - Standard</option><option>205 - Deluxe</option><option>301 - Suite</option>
             </select>
           </div>
         </div>
-        <div>
-          <label class="form-label">Transfer Date</label>
-          <input type="date" class="form-input">
-        </div>
-        <div>
-          <label class="form-label">Reason for Transfer</label>
-          <textarea class="form-input" rows="2" placeholder="Optional reason..."></textarea>
-        </div>
+        <div><label class="form-label">Transfer Date</label><input type="date" class="form-input"></div>
+        <div><label class="form-label">Reason for Transfer</label>
+          <textarea class="form-input" rows="2" placeholder="Optional reason..."></textarea></div>
       </div>
       <div class="modal-footer">
         <button onclick="closeModal('transferRoomModal')" class="btn-secondary">Cancel</button>
-        <button class="btn-primary" onclick="showToast('Room transfer processed successfully!', 'success'); closeModal('transferRoomModal')">Confirm Transfer</button>
+        <button class="btn-primary" onclick="showToast('Room transfer processed!', 'success'); closeModal('transferRoomModal')">Confirm Transfer</button>
       </div>
     </div>
   </div>
@@ -226,49 +240,29 @@ dashboardRoute.get('/', (c) => {
         <button onclick="closeModal('recordPaymentModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
       </div>
       <div class="p-4 space-y-4">
-        <div>
-          <label class="form-label">Search Guest by Phone / Booking ID *</label>
+        <div><label class="form-label">Search Guest by Phone / Booking ID *</label>
           <div class="flex gap-2">
             <input type="text" class="form-input flex-1" placeholder="Enter phone number or booking ID">
             <button class="btn-secondary" onclick="showToast('Guest record fetched', 'info')"><i class="fas fa-search"></i></button>
           </div>
         </div>
-        <div class="bg-blue-50 rounded-lg p-3 text-sm" id="guestInfo">
+        <div class="bg-blue-50 rounded-lg p-3 text-sm">
           <div class="font-medium text-gray-800">James Wilson</div>
-          <div class="text-gray-500 text-xs">Room 204 · Check-in: Today · Balance: $450.00</div>
+          <div class="text-gray-500 text-xs">Room 204 · Check-in: Today · Balance: ৳ 13,500</div>
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="form-label">Amount *</label>
-            <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-              <input type="number" class="form-input pl-7" placeholder="0.00">
-            </div>
-          </div>
-          <div>
-            <label class="form-label">Payment Method *</label>
-            <select class="form-input">
-              <option>Cash</option>
-              <option>Credit Card</option>
-              <option>Debit Card</option>
-              <option>Bank Transfer</option>
-              <option>Online Payment</option>
-            </select>
-          </div>
+          <div><label class="form-label">Amount *</label>
+            <div class="relative"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">৳</span>
+            <input type="number" class="form-input pl-7" placeholder="0.00"></div></div>
+          <div><label class="form-label">Payment Method *</label>
+            <select class="form-input"><option>Cash</option><option>Credit Card</option><option>bKash</option><option>Bank Transfer</option></select></div>
         </div>
-        <div>
-          <label class="form-label">Payment Type</label>
-          <select class="form-input">
-            <option>Room Charge</option>
-            <option>Advance Deposit</option>
-            <option>Full Settlement</option>
-            <option>Service Charge</option>
-          </select>
-        </div>
-        <div>
-          <label class="form-label">Reference / Transaction ID</label>
-          <input type="text" class="form-input" placeholder="Optional transaction reference">
-        </div>
+        <div><label class="form-label">Payment Type</label>
+          <select class="form-input"><option>Advance Deposit</option><option>Full Settlement</option><option>Room Charge</option><option>Service Charge</option></select></div>
+        <div><label class="form-label">Reference / Transaction ID</label>
+          <input type="text" class="form-input" placeholder="Optional transaction reference"></div>
+        <div><label class="form-label">Received By (Staff)</label>
+          <input type="text" class="form-input" value="Admin — Front Desk" readonly></div>
       </div>
       <div class="modal-footer">
         <button onclick="closeModal('recordPaymentModal')" class="btn-secondary">Cancel</button>
@@ -285,213 +279,98 @@ dashboardRoute.get('/', (c) => {
         <button onclick="closeModal('promotionModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
       </div>
       <div class="p-4 space-y-4">
-        <div>
-          <label class="form-label">Promotion Name *</label>
-          <input type="text" class="form-input" placeholder="e.g., Summer Special 2024">
+        <div><label class="form-label">Promotion Name *</label>
+          <input type="text" class="form-input" placeholder="e.g., Summer Special 2026"></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="form-label">Discount Type</label>
+            <select class="form-input"><option>Percentage Off</option><option>Fixed Amount Off</option><option>Free Night</option><option>Complimentary Service</option></select></div>
+          <div><label class="form-label">Discount Value *</label>
+            <input type="number" class="form-input" placeholder="e.g., 20 (for 20%)"></div>
         </div>
         <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="form-label">Discount Type</label>
-            <select class="form-input">
-              <option>Percentage Off</option>
-              <option>Fixed Amount Off</option>
-              <option>Free Night</option>
-              <option>Complimentary Service</option>
-            </select>
-          </div>
-          <div>
-            <label class="form-label">Discount Value *</label>
-            <input type="number" class="form-input" placeholder="e.g., 20 (for 20%)">
-          </div>
+          <div><label class="form-label">Valid From *</label><input type="date" class="form-input"></div>
+          <div><label class="form-label">Valid To *</label><input type="date" class="form-input"></div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="form-label">Valid From *</label>
-            <input type="date" class="form-input">
-          </div>
-          <div>
-            <label class="form-label">Valid To *</label>
-            <input type="date" class="form-input">
-          </div>
-        </div>
-        <div>
-          <label class="form-label">Apply To Channel</label>
-          <div class="flex gap-2 flex-wrap">
-            ${['B2C Website', 'B2B Agents', 'OTA', 'Walk-in', 'All Channels'].map(c => 
-              `<label class="flex items-center gap-1 text-sm"><input type="checkbox"> ${c}</label>`
+        <div><label class="form-label">Apply To Channel</label>
+          <div class="flex gap-3 flex-wrap">
+            ${['B2C Website', 'B2B Agents', 'OTA', 'Walk-in', 'All Channels'].map(c =>
+              `<label class="flex items-center gap-1 text-sm cursor-pointer"><input type="checkbox"> ${c}</label>`
             ).join('')}
           </div>
         </div>
-        <div>
-          <label class="form-label">Promo Code (optional)</label>
-          <input type="text" class="form-input" placeholder="e.g., SUMMER20">
-        </div>
+        <div><label class="form-label">Promo Code (optional)</label>
+          <input type="text" class="form-input" placeholder="e.g., SUMMER20"></div>
       </div>
       <div class="modal-footer">
         <button onclick="closeModal('promotionModal')" class="btn-secondary">Cancel</button>
-        <button class="btn-primary" onclick="showToast('Promotion created successfully!', 'success'); closeModal('promotionModal')">Create Promotion</button>
+        <button class="btn-primary" onclick="showToast('Promotion created!', 'success'); closeModal('promotionModal')">Create Promotion</button>
       </div>
     </div>
   </div>
 
-  <!-- Quick New Booking Modal — Category-Based -->
-  <div id="quickBookingModal" class="modal-overlay hidden">
-    <div class="modal-container max-w-2xl" style="max-height:90vh;overflow-y:auto;">
-      <div class="modal-header sticky top-0 bg-white z-10 border-b">
-        <div class="flex items-center gap-2">
-          <div class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center"><i class="fas fa-plus text-white text-xs"></i></div>
-          <h3 class="text-lg font-semibold text-gray-800">Quick New Booking</h3>
-        </div>
-        <button onclick="closeModal('quickBookingModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
-      </div>
-      <div class="p-5 space-y-4">
-        <div>
-          <label class="form-label">Guest Name *</label>
-          <input type="text" id="db_qb_name" class="form-input" placeholder="Full name">
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div><label class="form-label">Phone Number *</label><input type="tel" class="form-input" placeholder="+880 1700-000000"></div>
-          <div><label class="form-label">Email</label><input type="email" class="form-input" placeholder="guest@email.com"></div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div><label class="form-label">Check-in Date *</label><input type="date" id="db_qb_checkin" class="form-input"></div>
-          <div><label class="form-label">Check-out Date *</label><input type="date" id="db_qb_checkout" class="form-input"></div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="form-label">Room Category *</label>
-            <select id="db_qb_cat" class="form-input" onchange="dbUpdateSummary()">
-              <option value="">Select Category</option>
-              <option value="standard" data-rate="2000">Standard — ৳2,000/night</option>
-              <option value="deluxe" data-rate="3500">Deluxe — ৳3,500/night</option>
-              <option value="super_deluxe" data-rate="5000">Super Deluxe — ৳5,000/night</option>
-              <option value="deluxe_couple" data-rate="4500">Deluxe Couple — ৳4,500/night</option>
-              <option value="suite" data-rate="8000">Suite — ৳8,000/night</option>
-            </select>
-          </div>
-          <div>
-            <label class="form-label">Total Rooms</label>
-            <input type="number" id="db_qb_rooms" class="form-input" value="1" min="1" onchange="dbUpdateSummary()">
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div><label class="form-label">Adults *</label><input type="number" class="form-input" value="2" min="1"></div>
-          <div><label class="form-label">Children</label><input type="number" class="form-input" value="0" min="0"></div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div><label class="form-label">Booking Source</label>
-            <select class="form-input"><option>Walk-in</option><option>Phone</option><option>Website</option><option>B2B Agent</option><option>OTA</option></select>
-          </div>
-          <div><label class="form-label">Special Requests</label>
-            <input type="text" class="form-input" placeholder="Any special requirements...">
-          </div>
-        </div>
-        <!-- Payment Summary -->
-        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
-          <h4 class="text-xs font-bold text-orange-700 uppercase mb-3">Payment Summary</h4>
-          <div class="space-y-1.5 text-sm">
-            <div class="flex justify-between text-gray-600"><span>Room fare</span><span id="db_ps_fare">৳ 0</span></div>
-            <div class="flex justify-between text-gray-600"><span>VAT (7.5%)</span><span id="db_ps_vat">৳ 0</span></div>
-            <div class="flex justify-between font-bold text-gray-800 border-t pt-2"><span>Total</span><span id="db_ps_total" class="text-blue-700">৳ 0</span></div>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div><label class="form-label">Advance Paid</label><input type="number" id="db_paid" class="form-input" placeholder="0" oninput="dbCalcDue()"></div>
-          <div><label class="form-label">Balance Due</label><input type="number" id="db_due" class="form-input bg-red-50 text-red-600 font-semibold" readonly placeholder="0"></div>
-        </div>
-        <div><label class="form-label">Payment Method</label>
-          <select class="form-input"><option>Cash</option><option>bKash</option><option>Card</option><option>Bank Transfer</option></select>
-        </div>
-        <div class="bg-blue-50 rounded-xl p-3 text-xs text-blue-700"><i class="fas fa-info-circle mr-1"></i>Rate calculated automatically. Physical room assigned upon confirmation.</div>
-      </div>
-      <div class="sticky bottom-0 bg-white border-t px-5 py-3 flex gap-3 justify-end">
-        <button onclick="closeModal('quickBookingModal')" class="btn-secondary">Cancel</button>
-        <button onclick="dbSubmitBooking()" class="btn-primary">Create Booking</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Assign Rooms Modal -->
-  <div id="assignRoomsModal" class="modal-overlay hidden">
-    <div class="modal-container max-w-md">
-      <div class="modal-header">
-        <h3 class="text-lg font-semibold text-gray-800">Assign Rooms</h3>
-        <button onclick="closeModal('assignRoomsModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
-      </div>
-      <div class="p-5 space-y-4">
-        <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3">
-          <div>
-            <p class="text-sm font-semibold text-gray-800">Guest: <span class="text-blue-600">New Guest</span></p>
-            <p class="text-xs text-gray-500 mt-0.5">Request: <span class="font-semibold" id="assignCatLabel">1x Standard</span></p>
-          </div>
-          <button class="text-xs text-blue-600 underline">View details</button>
-        </div>
-        <div id="dbAssignInputs" class="space-y-3">
-          <div><label class="form-label">Room 1</label><input type="text" class="form-input" placeholder="e.g. 101" list="dbRoomList"></div>
-        </div>
-        <datalist id="dbRoomList">
-          <option value="101">101 — Standard</option>
-          <option value="102">102 — Standard</option>
-          <option value="202">202 — Deluxe</option>
-          <option value="205">205 — Deluxe</option>
-          <option value="401">401 — Deluxe Couple</option>
-        </datalist>
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700">
-          <i class="fas fa-info-circle mr-1"></i>Assigning rooms will confirm the booking and notify the guest.
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button onclick="closeModal('assignRoomsModal')" class="btn-secondary">Cancel</button>
-        <button onclick="showToast('Rooms assigned! Status → Confirmed.','success'); closeModal('assignRoomsModal')" class="btn-primary">Confirm Assignment</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- ═══ Charts Script ═══ -->
   <script>
-    let _dbTotal = 0;
-    function dbUpdateSummary() {
-      const catSel = document.getElementById('db_qb_cat');
-      const cin = document.getElementById('db_qb_checkin')?.value;
-      const cout = document.getElementById('db_qb_checkout')?.value;
-      const rooms = parseInt(document.getElementById('db_qb_rooms')?.value) || 1;
-      let rate = catSel?.selectedOptions[0]?.dataset?.rate ? parseInt(catSel.selectedOptions[0].dataset.rate) : 0;
-      let nights = 0;
-      if (cin && cout) { const d1=new Date(cin),d2=new Date(cout); nights=Math.max(0,Math.round((d2-d1)/86400000)); }
-      const fare = rate * nights * rooms;
-      const vat = Math.round(fare * 0.075);
-      const total = fare + vat;
-      _dbTotal = total;
-      document.getElementById('db_ps_fare').textContent = '৳ ' + fare.toLocaleString();
-      document.getElementById('db_ps_vat').textContent = '৳ ' + vat.toLocaleString();
-      document.getElementById('db_ps_total').textContent = '৳ ' + total.toLocaleString();
-      dbCalcDue();
-    }
-    function dbCalcDue() {
-      const paid = parseFloat(document.getElementById('db_paid')?.value) || 0;
-      const due = Math.max(0, _dbTotal - paid);
-      const el = document.getElementById('db_due');
-      if (el) el.value = due;
-    }
-    function dbSubmitBooking() {
-      const name = document.getElementById('db_qb_name')?.value;
-      const cat = document.getElementById('db_qb_cat')?.value;
-      if (!name || !cat) { showToast('Please fill Guest Name and Category.','error'); return; }
-      const paid = parseFloat(document.getElementById('db_paid')?.value) || 0;
-      closeModal('quickBookingModal');
-      if (paid >= _dbTotal && _dbTotal > 0) {
-        showToast('Booking confirmed! Room auto-assigned (fully paid).','success');
-      } else {
-        showToast('Booking created! Pending room assignment.','success');
-        setTimeout(() => { if(confirm('Assign room now?')) openModal('assignRoomsModal'); }, 500);
-      }
-    }
-    // Set default dates
-    (function(){
-      const today = new Date(), tom = new Date(today); tom.setDate(tom.getDate()+1);
-      const fmt = d => d.toISOString().split('T')[0];
-      const ci = document.getElementById('db_qb_checkin'), co = document.getElementById('db_qb_checkout');
-      if(ci) ci.value = fmt(today); if(co) co.value = fmt(tom);
-    })();
+    // Booking Trends Chart
+    const btCtx = document.getElementById('bookingTrendChart');
+    if (btCtx) new Chart(btCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Oct','Nov','Dec','Jan','Feb','Mar'],
+        datasets: [
+          { label:'Direct',   data:[45,52,48,65,58,72], backgroundColor:'rgba(59,130,246,0.8)', borderRadius:4 },
+          { label:'B2B',      data:[28,35,30,40,38,45], backgroundColor:'rgba(16,185,129,0.8)', borderRadius:4 },
+          { label:'OTA',      data:[20,25,22,30,28,35], backgroundColor:'rgba(245,158,11,0.8)', borderRadius:4 },
+          { label:'Walk-in',  data:[12,15,18,20,15,22], backgroundColor:'rgba(139,92,246,0.8)', borderRadius:4 },
+        ]
+      },
+      options: { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{ size:10 } } } },
+        scales:{ x:{ stacked:true, grid:{ display:false }, ticks:{font:{size:10}} }, y:{ stacked:true, ticks:{font:{size:10}}, grid:{color:'rgba(0,0,0,0.05)'} } } }
+    });
+
+    // Channel Distribution Chart
+    const cdCtx = document.getElementById('channelChart');
+    if (cdCtx) new Chart(cdCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Direct','B2B','OTA','Walk-in','Phone'],
+        datasets: [{ data:[38,22,18,14,8], backgroundColor:['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ec4899'] }]
+      },
+      options: { responsive:true, cutout:'65%',
+        plugins:{ legend:{ position:'bottom', labels:{ font:{ size:10 }, boxWidth:12 } } } }
+    });
+
+    // Revenue Chart
+    const rvCtx = document.getElementById('revenueChart');
+    if (rvCtx) new Chart(rvCtx, {
+      type: 'line',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [
+          { label:'Room Revenue', data:[45000,52000,48000,65000,78000,92000,87000],
+            borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.1)', fill:true, tension:0.4, pointRadius:3 },
+          { label:'F&B Revenue', data:[12000,15000,11000,18000,22000,28000,24000],
+            borderColor:'#10b981', backgroundColor:'rgba(16,185,129,0.1)', fill:true, tension:0.4, pointRadius:3 },
+        ]
+      },
+      options: { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{ size:10 } } } },
+        scales:{ x:{ grid:{ display:false }, ticks:{font:{size:10}} }, y:{ ticks:{font:{size:10}, callback: v => '৳'+Math.round(v/1000)+'K' }, grid:{color:'rgba(0,0,0,0.05)'} } } }
+    });
+
+    // Occupancy Chart
+    const ocCtx = document.getElementById('occupancyChart');
+    if (ocCtx) new Chart(ocCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        datasets: [{ label:'Occupancy %', data:[62,58,71,75,88,95,82],
+          backgroundColor: [62,58,71,75,88,95,82].map(v =>
+            v >= 80 ? 'rgba(16,185,129,0.8)' : v >= 60 ? 'rgba(245,158,11,0.8)' : 'rgba(239,68,68,0.8)'),
+          borderRadius: 6 }]
+      },
+      options: { responsive:true, plugins:{ legend:{ display:false } },
+        scales:{ x:{ grid:{display:false}, ticks:{font:{size:10}} },
+          y:{ max:100, ticks:{font:{size:10}, callback: v => v+'%'}, grid:{color:'rgba(0,0,0,0.05)'} } } }
+    });
   </script>
   `
 

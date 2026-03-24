@@ -690,6 +690,336 @@ bookingRoute.get('/group', (c) => {
   return c.html(adminLayout('Group Reservations', content, 'booking', 'group'))
 })
 
+// ─── Confirmed Bookings (with Assign Rooms workflow) ──────────────────────────
+bookingRoute.get('/confirmed', (c) => {
+  const confirmed = sampleBookings.filter(b => b.status === 'confirmed')
+
+  // Pending-assignment bookings (paid from widget / partial-pay pending assignment)
+  const pendingAssignment = [
+    {id:'BK-2026-042', guest:'Nusrat Jahan',    phone:'+880 1711-234567', category:'Deluxe Room',   rooms:1, checkin:'Mar 25', checkout:'Mar 28', nights:3, paid:10500, total:10500, source:'B2C Website', fullyPaid:true},
+    {id:'BK-2026-043', guest:'Hasan Mahmud',    phone:'+880 1822-345678', category:'Standard Room', rooms:2, checkin:'Mar 26', checkout:'Mar 29', nights:3, paid:6000,  total:12000, source:'OTA (Agoda)', fullyPaid:false},
+    {id:'BK-2026-044', guest:'Farhana Akter',   phone:'+880 1933-456789', category:'Super Deluxe',  rooms:1, checkin:'Mar 27', checkout:'Mar 30', nights:3, paid:15000, total:15000, source:'B2C Website', fullyPaid:true},
+    {id:'BK-2026-045', guest:'Rafiqul Islam',   phone:'+880 1644-567890', category:'Deluxe Couple', rooms:1, checkin:'Mar 28', checkout:'Apr 01', nights:4, paid:9000,  total:18000, source:'Walk-in',     fullyPaid:false},
+  ]
+
+  const content = `
+  ${pageHeader('Confirmed Bookings', 'Manage confirmed reservations and room assignments', `
+    <button onclick="openModal('globalBookingModal')" class="btn-primary"><i class="fas fa-plus"></i>New Booking</button>
+    <button class="btn-secondary"><i class="fas fa-download mr-1"></i>Export</button>
+  `)}
+
+  <!-- Summary Stats -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+    <div class="card p-4 text-center border-l-4 border-green-500">
+      <div class="text-2xl font-bold text-gray-800">${confirmed.length + 4}</div>
+      <div class="text-xs text-gray-500 mt-1">Total Confirmed</div>
+    </div>
+    <div class="card p-4 text-center border-l-4 border-blue-400">
+      <div class="text-2xl font-bold text-blue-600">11</div>
+      <div class="text-xs text-gray-500 mt-1">Arriving Today</div>
+    </div>
+    <div class="card p-4 text-center border-l-4 border-yellow-400">
+      <div class="text-2xl font-bold text-yellow-600">4</div>
+      <div class="text-xs text-gray-500 mt-1">Pending Assignment</div>
+    </div>
+    <div class="card p-4 text-center border-l-4 border-purple-400">
+      <div class="text-2xl font-bold text-purple-600">৳ 9,84,500</div>
+      <div class="text-xs text-gray-500 mt-1">Confirmed Revenue</div>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION A: Pending Room Assignment ═══ -->
+  <div class="card mb-5">
+    <div class="card-header flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <h3 class="font-semibold text-gray-800"><i class="fas fa-layer-group text-yellow-500 mr-2"></i>Pending Room Assignment</h3>
+        <span class="bg-yellow-100 text-yellow-700 text-xs font-bold px-2 py-0.5 rounded-full">4</span>
+      </div>
+      <p class="text-xs text-gray-500">Assign physical rooms to confirm these bookings</p>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="table-header">Booking ID</th>
+            <th class="table-header">Guest</th>
+            <th class="table-header">Category / Rooms</th>
+            <th class="table-header">Check-in / Out</th>
+            <th class="table-header">Source</th>
+            <th class="table-header">Payment</th>
+            <th class="table-header">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          ${pendingAssignment.map(b => `
+            <tr class="table-row hover:bg-yellow-50">
+              <td class="table-cell">
+                <span class="font-mono text-xs text-blue-600 font-medium">${b.id}</span>
+                ${b.fullyPaid ? `<div class="text-xs text-green-600 font-semibold mt-0.5"><i class="fas fa-check-circle mr-0.5"></i>Fully Paid</div>` : `<div class="text-xs text-yellow-600 mt-0.5">Partial Payment</div>`}
+              </td>
+              <td class="table-cell">
+                <div class="font-medium text-gray-800">${b.guest}</div>
+                <div class="text-xs text-gray-400">${b.phone}</div>
+              </td>
+              <td class="table-cell">
+                <div class="text-sm font-medium text-gray-700">${b.category}</div>
+                <div class="text-xs text-gray-400">${b.rooms} room${b.rooms > 1 ? 's' : ''} requested</div>
+              </td>
+              <td class="table-cell text-xs">
+                <div>${b.checkin} → ${b.checkout}</div>
+                <div class="text-gray-400">${b.nights} nights</div>
+              </td>
+              <td class="table-cell">
+                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">${b.source}</span>
+              </td>
+              <td class="table-cell">
+                <div class="text-sm font-semibold text-gray-800">৳ ${b.total.toLocaleString()}</div>
+                <div class="text-xs ${b.fullyPaid ? 'text-green-600' : 'text-red-500'}">
+                  Paid: ৳ ${b.paid.toLocaleString()}
+                </div>
+              </td>
+              <td class="table-cell">
+                <button onclick="openAssignModal('${b.id}','${b.guest}','${b.category}',${b.rooms},${b.fullyPaid})"
+                  class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1">
+                  <i class="fas fa-layer-group text-xs"></i>Assign Rooms
+                </button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="p-3 bg-blue-50 border-t border-blue-100 flex items-start gap-2">
+      <i class="fas fa-info-circle text-blue-500 mt-0.5 flex-shrink-0"></i>
+      <p class="text-xs text-blue-700">
+        <strong>Auto-assignment:</strong> Fully-paid bookings submitted via the B2C widget are auto-assigned to available rooms and moved directly to Confirmed.
+        Bookings with partial payment require manual room assignment by staff.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══ SECTION B: Confirmed & Assigned ═══ -->
+  <div class="card">
+    <div class="card-header flex items-center justify-between">
+      <h3 class="font-semibold text-gray-800"><i class="fas fa-check-circle text-green-500 mr-2"></i>Confirmed & Room Assigned</h3>
+      <div class="flex gap-2">
+        <select class="text-xs border border-gray-200 rounded px-2 py-1 text-gray-600">
+          <option>All Dates</option><option>Today</option><option>This Week</option><option>This Month</option>
+        </select>
+        <input type="text" placeholder="Search..." class="text-xs border border-gray-200 rounded px-2 py-1 w-40 text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="table-header">Booking ID</th>
+            <th class="table-header">Guest</th>
+            <th class="table-header">Room Assigned</th>
+            <th class="table-header">Check-in / Out</th>
+            <th class="table-header">Nights</th>
+            <th class="table-header">Amount</th>
+            <th class="table-header">Source</th>
+            <th class="table-header">Status</th>
+            <th class="table-header">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          ${confirmed.map(b => `
+            <tr class="table-row hover:bg-green-50">
+              <td class="table-cell"><span class="font-mono text-xs text-blue-600 font-medium">${b.id}</span></td>
+              <td class="table-cell">
+                <div class="font-medium text-gray-800">${b.guest}</div>
+                <div class="text-xs text-gray-400">${b.phone}</div>
+              </td>
+              <td class="table-cell">
+                <div class="flex items-center gap-1">
+                  <span class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-xs font-bold text-green-700">${b.room}</span>
+                  <span class="text-xs text-gray-500">${b.category}</span>
+                </div>
+              </td>
+              <td class="table-cell text-xs">
+                <div>${b.checkin} → ${b.checkout}</div>
+              </td>
+              <td class="table-cell text-center font-medium text-gray-700">${b.nights}</td>
+              <td class="table-cell">
+                <div class="text-sm font-medium">৳ ${(b.amount * 280).toLocaleString()}</div>
+                ${b.balance > 0 ? `<div class="text-xs text-red-500">Bal: ৳ ${(b.balance * 280).toLocaleString()}</div>` : `<div class="text-xs text-green-600">Fully Paid</div>`}
+              </td>
+              <td class="table-cell"><span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">${b.source}</span></td>
+              <td class="table-cell">${statusBadge('confirmed')}</td>
+              <td class="table-cell">
+                <div class="flex gap-1">
+                  <button onclick="openModal('viewBookingModal')" class="text-blue-600 hover:text-blue-700 p-1" title="View"><i class="fas fa-eye text-xs"></i></button>
+                  <button onclick="openModal('editBookingModal')" class="text-gray-500 hover:text-gray-700 p-1" title="Edit"><i class="fas fa-edit text-xs"></i></button>
+                  <button onclick="showToast('Check-in recorded for ${b.guest}!','success')" class="text-green-600 hover:text-green-800 p-1" title="Check-in"><i class="fas fa-sign-in-alt text-xs"></i></button>
+                </div>
+              </td>
+            </tr>
+          `).join('')}
+          <!-- Extra rows to look realistic -->
+          ${[
+            {id:'BK-2026-038',guest:'Karim Uddin',phone:'+880 1555-111222',room:'304',cat:'Super Deluxe',ci:'Mar 22',co:'Mar 25',n:3,amt:'৳ 15,750',bal:false,src:'B2B Agent'},
+            {id:'BK-2026-039',guest:'Ritu Rani',  phone:'+880 1666-222333',room:'401',cat:'Deluxe Couple',ci:'Mar 23',co:'Mar 26',n:3,amt:'৳ 14,175',bal:false,src:'Walk-in'},
+            {id:'BK-2026-040',guest:'Sohag Islam', phone:'+880 1777-333444',room:'202',cat:'Deluxe',      ci:'Mar 24',co:'Mar 27',n:3,amt:'৳ 11,025',bal:true, src:'OTA (Booking.com)'},
+            {id:'BK-2026-041',guest:'Marium Begum',phone:'+880 1888-444555',room:'102',cat:'Standard',    ci:'Mar 24',co:'Mar 26',n:2,amt:'৳ 5,300', bal:false,src:'B2C Website'},
+          ].map(b => `
+            <tr class="table-row hover:bg-green-50">
+              <td class="table-cell"><span class="font-mono text-xs text-blue-600 font-medium">${b.id}</span></td>
+              <td class="table-cell"><div class="font-medium text-gray-800">${b.guest}</div><div class="text-xs text-gray-400">${b.phone}</div></td>
+              <td class="table-cell"><div class="flex items-center gap-1"><span class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-xs font-bold text-green-700">${b.room}</span><span class="text-xs text-gray-500">${b.cat}</span></div></td>
+              <td class="table-cell text-xs">${b.ci} → ${b.co}</td>
+              <td class="table-cell text-center font-medium text-gray-700">${b.n}</td>
+              <td class="table-cell"><div class="text-sm font-medium">${b.amt}</div>${b.bal ? '<div class="text-xs text-red-500">Balance Due</div>' : '<div class="text-xs text-green-600">Fully Paid</div>'}</td>
+              <td class="table-cell"><span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">${b.src}</span></td>
+              <td class="table-cell">${statusBadge('confirmed')}</td>
+              <td class="table-cell"><div class="flex gap-1"><button onclick="openModal('viewBookingModal')" class="text-blue-600 p-1"><i class="fas fa-eye text-xs"></i></button><button onclick="showToast('Check-in recorded!','success')" class="text-green-600 p-1"><i class="fas fa-sign-in-alt text-xs"></i></button></div></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="p-4 border-t border-gray-100 flex items-center justify-between text-sm text-gray-500">
+      <span>Showing 1-${confirmed.length + 4} of 189 confirmed bookings</span>
+      <div class="flex gap-1">
+        <button class="px-3 py-1 border border-gray-200 rounded hover:bg-gray-50"><i class="fas fa-chevron-left text-xs"></i></button>
+        <button class="px-3 py-1 bg-blue-600 text-white rounded">1</button>
+        <button class="px-3 py-1 border border-gray-200 rounded hover:bg-gray-50">2</button>
+        <button class="px-3 py-1 border border-gray-200 rounded hover:bg-gray-50">3</button>
+        <button class="px-3 py-1 border border-gray-200 rounded hover:bg-gray-50"><i class="fas fa-chevron-right text-xs"></i></button>
+      </div>
+    </div>
+  </div>
+
+  ${bookingModals()}
+
+  <!-- ═══ ASSIGN ROOMS MODAL ═══ -->
+  <div id="assignRoomsModal" class="modal-overlay hidden">
+    <div class="modal-container max-w-lg">
+      <div class="modal-header">
+        <h3 class="text-lg font-semibold text-gray-800"><i class="fas fa-layer-group text-blue-500 mr-2"></i>Assign Rooms to Booking</h3>
+        <button onclick="closeModal('assignRoomsModal')" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+      </div>
+      <div class="p-5 space-y-4">
+        <!-- Booking info banner -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-user text-white text-xs"></i>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-800 text-sm" id="arm_guest">—</p>
+              <p class="text-xs text-gray-500 mt-0.5">Booking <span id="arm_id" class="font-mono text-blue-600">—</span></p>
+              <p class="text-xs text-gray-600 mt-1">
+                Category: <strong id="arm_cat">—</strong> &nbsp;·&nbsp; Rooms Requested: <strong id="arm_rooms">—</strong>
+              </p>
+            </div>
+          </div>
+          <div id="arm_autoNote" class="hidden mt-3 bg-green-50 border border-green-200 rounded-lg p-2 text-xs text-green-700">
+            <i class="fas fa-robot mr-1"></i><strong>Auto-assignment eligible</strong> — This booking is fully paid. Confirming will auto-assign available rooms.
+          </div>
+        </div>
+
+        <!-- Available rooms by category -->
+        <div>
+          <label class="form-label">Select Rooms to Assign</label>
+          <p class="text-xs text-gray-400 mb-2">Only rooms matching the booked category are shown. Choose one per room requested.</p>
+          <div id="arm_roomList" class="space-y-2 max-h-52 overflow-y-auto">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Staff info -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="form-label">Assigned By</label>
+            <input type="text" class="form-input bg-gray-50 text-gray-500 text-xs" value="Admin — Front Desk" readonly>
+          </div>
+          <div>
+            <label class="form-label">Assignment Date</label>
+            <input type="date" id="arm_date" class="form-input text-sm">
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Notes (Optional)</label>
+          <textarea id="arm_notes" class="form-input text-sm" rows="2" placeholder="Any special instructions for housekeeping or guest..."></textarea>
+        </div>
+
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-xs text-yellow-700">
+          <i class="fas fa-info-circle mr-1"></i>
+          Confirming assignment will change booking status to <strong>Confirmed</strong> and notify the guest via email/SMS.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeModal('assignRoomsModal')" class="btn-secondary flex-1 py-2.5 text-sm">Cancel</button>
+        <button onclick="confirmRoomAssignment()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl flex-1 py-2.5 text-sm transition">
+          <i class="fas fa-check mr-1"></i>Confirm Assignment → Confirmed
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Available rooms data (keyed by category)
+    const availableRooms = {
+      'Standard Room':   [{num:'101', floor:1, view:'Garden'},{num:'102', floor:1, view:'Pool'},{num:'105', floor:1, view:'Garden'}],
+      'Deluxe Room':     [{num:'202', floor:2, view:'City'},{num:'205', floor:2, view:'City'}],
+      'Super Deluxe':    [{num:'304', floor:3, view:'Pool'}],
+      'Deluxe Couple':   [{num:'401', floor:4, view:'Garden'},{num:'404', floor:4, view:'Garden'}],
+    }
+
+    function openAssignModal(id, guest, category, rooms, fullyPaid) {
+      document.getElementById('arm_guest').textContent  = guest
+      document.getElementById('arm_id').textContent    = id
+      document.getElementById('arm_cat').textContent   = category
+      document.getElementById('arm_rooms').textContent = rooms + ' room' + (rooms > 1 ? 's' : '')
+      document.getElementById('arm_autoNote').classList.toggle('hidden', !fullyPaid)
+      // Today date
+      const arm_date = document.getElementById('arm_date')
+      if (arm_date) arm_date.value = new Date().toISOString().split('T')[0]
+
+      // Build room selection list
+      const list   = document.getElementById('arm_roomList')
+      const bucket = availableRooms[category] || []
+      list.innerHTML = ''
+      for (let i = 0; i < rooms; i++) {
+        const div = document.createElement('div')
+        div.className = 'border border-gray-200 rounded-xl p-3 bg-gray-50'
+        div.innerHTML = \`
+          <p class="text-xs font-semibold text-gray-600 mb-2">Room \${i+1} of \${rooms}</p>
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-\${Math.min(bucket.length, 3)} gap-2">
+            \${bucket.map(r => \`
+              <label class="flex items-center gap-2 cursor-pointer border border-gray-200 rounded-lg px-3 py-2 bg-white hover:border-blue-400 has-checked:border-blue-600 has-checked:bg-blue-50 transition text-sm">
+                <input type="radio" name="arm_pick_\${i}" value="\${r.num}" class="accent-blue-600">
+                <div>
+                  <div class="font-bold text-gray-800">Rm \${r.num}</div>
+                  <div class="text-xs text-gray-400">Fl \${r.floor} · \${r.view}</div>
+                </div>
+              </label>
+            \`).join('')}
+            \${fullyPaid && bucket.length > 0 ? '' : \`
+              <label class="flex items-center gap-2 cursor-pointer border border-dashed border-gray-300 rounded-lg px-3 py-2 bg-white hover:border-blue-400 transition text-xs text-gray-500">
+                <input type="radio" name="arm_pick_\${i}" value="manual" class="accent-blue-600">
+                <span>Enter manually</span>
+              </label>\`}
+          </div>
+        \`
+        list.appendChild(div)
+      }
+      openModal('assignRoomsModal')
+    }
+
+    function confirmRoomAssignment() {
+      const guest = document.getElementById('arm_guest').textContent
+      closeModal('assignRoomsModal')
+      showToast('Rooms assigned! Booking for ' + guest + ' → Confirmed ✓', 'success')
+    }
+  </script>
+  `
+  return c.html(adminLayout('Confirmed Bookings', content, 'booking', 'confirmed'))
+})
+
 // Calendar View
 bookingRoute.get('/calendar', (c) => {
   const rooms = [
